@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -66,29 +67,52 @@ type song struct {
 	origin   string
 }
 
+func convertMillisToMinutes(millis int) float64 {
+	if millis == 0 {
+		return 0
+	} else {
+		return float64(millis) / 60000
+	}
+}
 func main() {
 
-	response, err := http.Get("https://itunes.apple.com/search?term=Guatemala")
+	songs := []song{}
+	//call to apple's api
+	response, err := http.Get("https://itunes.apple.com/search?term=Nirvana")
 	if err != nil {
 		fmt.Print(err.Error())
 		os.Exit(1)
 	}
 
+	//get response by apple's api
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	//convert response to string and convert []byte to json
 	s := string(responseData)
-	//fmt.Println(s)
-
 	jsonMainApple := restApple{}
 	err2 := json.Unmarshal([]byte(s), &jsonMainApple)
-
 	if err2 != nil {
 		fmt.Println(err2)
 	}
 
-	fmt.Println(jsonMainApple.Results[0])
+	singleSong := song{}
+
+	for _, v := range jsonMainApple.Results {
+		singleSong = song{
+			id:       strconv.FormatInt(int64(v.TrackID), 10),
+			name:     v.TrackName,
+			artist:   v.ArtistName,
+			duration: strconv.FormatFloat(convertMillisToMinutes(v.TrackTimeMillis), 'E', -1, 64),
+			album:    v.CollectionName,
+			artwork:  v.ArtworkURL100,
+			price:    strconv.FormatFloat(v.TrackPrice, 'E', -1, 64),
+			origin:   v.Country,
+		}
+		songs = append(songs, singleSong)
+	}
+	fmt.Println(songs)
 
 }
