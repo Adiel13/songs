@@ -70,23 +70,30 @@ type song struct {
 	origin   string
 }
 
-// GetIPLocationResponse will hold the Soap response
-type GetSearchLyricResult struct {
-	SearchLyricResult string `xml:"SearchLyricResult"`
+type SearchLyricResult struct {
+	XMLName       xml.Name `xml:"SearchLyricResult"`
+	TrackChecksum string   `xml:"TrackChecksum"`
+	TrackId       int      `xml:"TrackId"`
+	LyricId       int      `xml:"LyricId"`
+	SongUrl       string   `xml:"SongUrl"`
+	ArtistUrl     string   `xml:"ArtistUrl"`
+	Artist        string   `xml:"Artist"`
+	Song          string   `xml:"Song"`
+	SongRank      int      `xml:"SongRank"`
 }
 
-// GetIPLocationResult will
-type GetIPLocationResult struct {
-	XMLName xml.Name `xml:"GeoIP"`
-	Country string   `xml:"Country"`
-	State   string   `xml:"State"`
+type SearchLyricResponse struct {
+	XMLName           xml.Name            `xml:"SearchLyricResponse"`
+	SearchLyricResult []SearchLyricResult `xml:"SearchLyricResult>SearchLyricResult"`
 }
 
 var (
-	r GetSearchLyricResult
+	r SearchLyricResult
 )
 
-func clientSoap() {
+func clientSoap() []song {
+	songs := []song{}
+
 	httpClient := &http.Client{
 		Timeout: 1500 * time.Millisecond,
 	}
@@ -111,23 +118,30 @@ func clientSoap() {
 	if err != nil {
 		log.Fatalf("Call error: %s", err)
 	}
-	fmt.Println(string(res.Body[:]))
-	//res.Unmarshal(&r)
-	fmt.Printf("%T", res)
+	res.Unmarshal(&r)
 
-	/*// GetIpLocationResult will be a string. We need to parse it to XML
-	result := GetIPLocationResult{}
-	err = xml.Unmarshal([]byte(r.GetIPLocationResult), &result)
-	if err != nil {
-		log.Fatalf("xml.Unmarshal error: %s", err)
+	var response SearchLyricResponse
+	err2 := xml.Unmarshal(res.Body, &response)
+	if err2 != nil {
+		fmt.Println("Error al analizar el XML:", err2)
+		return songs
 	}
-
-	if result.Country != "US" {
-		log.Fatalf("error: %+v", r)
+	singleSong := song{}
+	// Imprimir los resultados
+	for _, v := range response.SearchLyricResult {
+		singleSong = song{
+			id:       strconv.FormatInt(int64(v.TrackId), 10),
+			name:     v.Song,
+			artist:   v.Artist,
+			duration: "0:00",
+			album:    "",
+			artwork:  v.ArtistUrl,
+			price:    "",
+			origin:   "",
+		}
+		songs = append(songs, singleSong)
 	}
-
-	log.Println("Country: ", result.Country)
-	log.Println("State: ", result.State)*/
+	return songs
 }
 
 func convertMillisToMinutes(millis int) float64 {
@@ -176,7 +190,8 @@ func main() {
 		}
 		songs = append(songs, singleSong)
 	}
-	//fmt.Println(songs)
+	resultSoap := clientSoap()
+	songs = append(songs, resultSoap...)
+	fmt.Println(songs)
 
-	clientSoap()
 }
