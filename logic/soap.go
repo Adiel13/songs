@@ -32,7 +32,7 @@ var (
 	r SearchLyricResult
 )
 
-func ClientSoapSong() []song {
+func ClientSoapSong(artist string, track string) []song {
 	songs := []song{}
 
 	httpClient := &http.Client{
@@ -51,8 +51,8 @@ func ClientSoapSong() []song {
 
 	// Use gosoap.ArrayParams to support fixed position params
 	params := gosoap.Params{
-		"artist": "artist",
-		"song":   "song",
+		"artist": artist,
+		"song":   track,
 	}
 
 	res, err := soap.Call("SearchLyric", params)

@@ -64,10 +64,12 @@ func convertMillisToMinutes(millis int) float64 {
 	}
 }
 
-func ClientRestSongs() []song {
+func ClientRestSongs(artist string, track string) []song {
 	songs := []song{}
 	//call to apple's api
-	response, err := http.Get("https://itunes.apple.com/search?term=Nirvana")
+	term := "https://itunes.apple.com/search?term=" + artist
+
+	response, err := http.Get(term)
 	if err != nil {
 		fmt.Print(err.Error())
 		os.Exit(1)

@@ -23,14 +23,11 @@ type TransaccionSong struct {
 }
 
 func InsertSong(s song) {
-	// Configurar la conexión a la base de datos
 	dsn := "root:songs@tcp(localhost:3306)/songs?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("Failed to connect to database")
 	}
-
-	// Crear un nuevo usuario y realizar la inserción en la base de datos
 
 	newSong := TransaccionSong{
 		TrackID:    s.id,
@@ -46,11 +43,9 @@ func InsertSong(s song) {
 	}
 	result := db.Create(&newSong)
 	if result.Error != nil {
-		// Manejar el error si la inserción falla
 		panic(result.Error)
 	}
 
-	// Verificar si la inserción fue exitosa
 	if result.RowsAffected > 0 {
 	} else {
 		println("No se insertó ninguna fila")
