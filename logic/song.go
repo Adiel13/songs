@@ -9,4 +9,5 @@ type song struct {
 	artwork  string
 	price    string
 	origin   string
+	fuente   int
 }

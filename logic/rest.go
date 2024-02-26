@@ -99,6 +99,7 @@ func ClientRestSongs() []song {
 			artwork:  v.ArtworkURL100,
 			price:    strconv.FormatFloat(v.TrackPrice, 'E', -1, 64),
 			origin:   v.Country,
+			fuente:   1,
 		}
 		songs = append(songs, singleSong)
 	}

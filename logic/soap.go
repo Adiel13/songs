@@ -79,6 +79,7 @@ func ClientSoapSong() []song {
 			artwork:  v.ArtistUrl,
 			price:    "",
 			origin:   "",
+			fuente:   2,
 		}
 		songs = append(songs, singleSong)
 	}

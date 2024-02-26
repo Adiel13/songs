@@ -12,6 +12,6 @@ func main() {
 	resultSongs = append(resultSongs, resultApple...)
 
 	for _, v := range resultSongs {
-		logic.InsertSong(v, 1)
+		logic.InsertSong(v)
 	}
 }

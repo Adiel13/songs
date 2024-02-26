@@ -1,6 +1,8 @@
 package logic
 
 import (
+	"time"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -17,9 +19,10 @@ type TransaccionSong struct {
 	Price      float64
 	Origin     string
 	Fuente     int `gorm:"column:fuente"`
+	Fecha      time.Time
 }
 
-func InsertSong(s song, fuente int) {
+func InsertSong(s song) {
 	// Configurar la conexión a la base de datos
 	dsn := "root:songs@tcp(localhost:3306)/songs?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -38,7 +41,8 @@ func InsertSong(s song, fuente int) {
 		URLArtWork: s.artwork,
 		Price:      0.0,
 		Origin:     s.origin,
-		Fuente:     fuente,
+		Fuente:     s.fuente,
+		Fecha:      time.Now(),
 	}
 	result := db.Create(&newSong)
 	if result.Error != nil {
@@ -48,7 +52,6 @@ func InsertSong(s song, fuente int) {
 
 	// Verificar si la inserción fue exitosa
 	if result.RowsAffected > 0 {
-		println("Inserción exitosa")
 	} else {
 		println("No se insertó ninguna fila")
 	}
