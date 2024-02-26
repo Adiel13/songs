@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -9,6 +10,8 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/tiaguinho/gosoap"
 )
 
 type restApple struct {
@@ -67,6 +70,66 @@ type song struct {
 	origin   string
 }
 
+// GetIPLocationResponse will hold the Soap response
+type GetSearchLyricResult struct {
+	SearchLyricResult string `xml:"SearchLyricResult"`
+}
+
+// GetIPLocationResult will
+type GetIPLocationResult struct {
+	XMLName xml.Name `xml:"GeoIP"`
+	Country string   `xml:"Country"`
+	State   string   `xml:"State"`
+}
+
+var (
+	r GetSearchLyricResult
+)
+
+func clientSoap() {
+	httpClient := &http.Client{
+		Timeout: 1500 * time.Millisecond,
+	}
+	// set custom envelope
+	gosoap.SetCustomEnvelope("soapenv", map[string]string{
+		"xmlns:soapenv": "http://schemas.xmlsoap.org/soap/envelope/",
+		"xmlns:tem":     "http://tempuri.org/",
+	})
+
+	soap, err := gosoap.SoapClient("http://api.chartlyrics.com/apiv1.asmx?wsdl", httpClient)
+	if err != nil {
+		log.Fatalf("SoapClient error: %s", err)
+	}
+
+	// Use gosoap.ArrayParams to support fixed position params
+	params := gosoap.Params{
+		"artist": "artist",
+		"song":   "song",
+	}
+
+	res, err := soap.Call("SearchLyric", params)
+	if err != nil {
+		log.Fatalf("Call error: %s", err)
+	}
+	fmt.Println(string(res.Body[:]))
+	//res.Unmarshal(&r)
+	fmt.Printf("%T", res)
+
+	/*// GetIpLocationResult will be a string. We need to parse it to XML
+	result := GetIPLocationResult{}
+	err = xml.Unmarshal([]byte(r.GetIPLocationResult), &result)
+	if err != nil {
+		log.Fatalf("xml.Unmarshal error: %s", err)
+	}
+
+	if result.Country != "US" {
+		log.Fatalf("error: %+v", r)
+	}
+
+	log.Println("Country: ", result.Country)
+	log.Println("State: ", result.State)*/
+}
+
 func convertMillisToMinutes(millis int) float64 {
 	if millis == 0 {
 		return 0
@@ -98,8 +161,8 @@ func main() {
 		fmt.Println(err2)
 	}
 
+	//create a single song and insert into general slice songs
 	singleSong := song{}
-
 	for _, v := range jsonMainApple.Results {
 		singleSong = song{
 			id:       strconv.FormatInt(int64(v.TrackID), 10),
@@ -113,6 +176,7 @@ func main() {
 		}
 		songs = append(songs, singleSong)
 	}
-	fmt.Println(songs)
+	//fmt.Println(songs)
 
+	clientSoap()
 }
