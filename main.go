@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"songs/logic"
 )
 
@@ -12,6 +10,8 @@ func main() {
 	resultApple := logic.ClientRestSongs()
 
 	resultSongs = append(resultSongs, resultApple...)
-	fmt.Println(resultSongs)
 
+	for _, v := range resultSongs {
+		logic.InsertSong(v, 1)
+	}
 }
