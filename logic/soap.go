@@ -38,7 +38,7 @@ func ClientSoapSong(artist string, track string) []song {
 	httpClient := &http.Client{
 		Timeout: 1500 * time.Millisecond,
 	}
-	// set custom envelope
+
 	gosoap.SetCustomEnvelope("soapenv", map[string]string{
 		"xmlns:soapenv": "http://schemas.xmlsoap.org/soap/envelope/",
 		"xmlns:tem":     "http://tempuri.org/",
@@ -49,7 +49,6 @@ func ClientSoapSong(artist string, track string) []song {
 		log.Fatalf("SoapClient error: %s", err)
 	}
 
-	// Use gosoap.ArrayParams to support fixed position params
 	params := gosoap.Params{
 		"artist": artist,
 		"song":   track,
@@ -68,7 +67,6 @@ func ClientSoapSong(artist string, track string) []song {
 		return songs
 	}
 	singleSong := song{}
-	// Imprimir los resultados
 	for _, v := range response.SearchLyricResult {
 		singleSong = song{
 			id:       strconv.FormatInt(int64(v.TrackId), 10),

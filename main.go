@@ -15,9 +15,7 @@ func searchSongs(artist string, song string) string {
 	resultApple := logic.ClientRestSongs(artist, song)
 	resultSongs = append(resultSongs, resultApple...)
 
-	for _, v := range resultSongs {
-		logic.InsertSong(v)
-	}
+	logic.InsertSong(resultSongs)
 	jsonData, err := json.Marshal(resultSongs)
 	if err != nil {
 		fmt.Println("hubo un error")

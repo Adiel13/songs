@@ -22,33 +22,35 @@ type TransaccionSong struct {
 	Fecha      time.Time
 }
 
-func InsertSong(s song) {
-	dsn := "root:songs@tcp(db_songs:3306)/songs?charset=utf8mb4&parseTime=True&loc=Local"
+func InsertSong(songs []song) {
+	dsn := "root:songs@tcp(localhost:3306)/songs?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("Failed to connect to database")
 	}
 
-	newSong := TransaccionSong{
-		TrackID:    s.id,
-		NombreSong: s.name,
-		Artist:     s.artist,
-		Duration:   s.duration,
-		Album:      s.album,
-		URLArtWork: s.artwork,
-		Price:      0.0,
-		Origin:     s.origin,
-		Fuente:     s.fuente,
-		Fecha:      time.Now(),
-	}
-	result := db.Create(&newSong)
-	if result.Error != nil {
-		panic(result.Error)
-	}
+	for _, s := range songs {
+		newSong := TransaccionSong{
+			TrackID:    s.id,
+			NombreSong: s.name,
+			Artist:     s.artist,
+			Duration:   s.duration,
+			Album:      s.album,
+			URLArtWork: s.artwork,
+			Price:      0.0,
+			Origin:     s.origin,
+			Fuente:     s.fuente,
+			Fecha:      time.Now(),
+		}
+		result := db.Create(&newSong)
+		if result.Error != nil {
+			panic(result.Error)
+		}
+		if result.RowsAffected > 0 {
+		} else {
+			println("No se insertó ninguna fila")
+		}
 
-	if result.RowsAffected > 0 {
-	} else {
-		println("No se insertó ninguna fila")
 	}
 
 }
