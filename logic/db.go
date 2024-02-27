@@ -23,7 +23,7 @@ type TransaccionSong struct {
 }
 
 func InsertSong(songs []song) {
-	dsn := "root:songs@tcp(localhost:3306)/songs?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:songs@tcp(db_songs:3306)/songs?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("Failed to connect to database")
