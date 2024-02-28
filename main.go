@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"songs/logic"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
+
+var tokens map[string]bool
 
 func searchSongs(artist string, song string) string {
 	resultSongs := logic.ClientSoapSong(artist, song)
@@ -34,6 +37,20 @@ type Payload struct {
 }
 
 func postSerachSongs(w http.ResponseWriter, r *http.Request) {
+
+	// Verifica si el token de autorización está presente en el encabezado
+	authToken := r.Header.Get("Authorization")
+	if authToken == "" {
+		http.Error(w, "Token de autorización requerido", http.StatusUnauthorized)
+		return
+	}
+
+	// Verifica si el token de autorización es válido
+	if !tokens[authToken] {
+		http.Error(w, "Token de autorización inválido", http.StatusUnauthorized)
+		return
+	}
+
 	var payload Payload
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -46,9 +63,15 @@ func postSerachSongs(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
 	if err := godotenv.Load(); err != nil {
 		fmt.Printf("Error cargando el archivo .env: %v", err)
 	}
+
+	token := os.Getenv("TOKEN")
+	tokens = make(map[string]bool)
+	tokens[token] = true
+
 	router := mux.NewRouter()
 	router.HandleFunc("/search/song", postSerachSongs).Methods("POST")
 	fmt.Println("Servicio levantado")
