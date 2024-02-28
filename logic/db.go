@@ -1,6 +1,8 @@
 package logic
 
 import (
+	"fmt"
+	"os"
 	"time"
 
 	"gorm.io/driver/mysql"
@@ -23,7 +25,13 @@ type TransaccionSong struct {
 }
 
 func InsertSong(songs []song) {
-	dsn := "root:songs@tcp(db_songs:3306)/songs?charset=utf8mb4&parseTime=True&loc=Local"
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbUser := os.Getenv("DB_USER")
+	dbDB := os.Getenv("DB_DATABASE")
+
+	//dsn := "root:songs@tcp(db_songs:3306)/songs?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/songs?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbDB, dbHost, dbPort)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("Failed to connect to database")

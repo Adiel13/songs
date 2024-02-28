@@ -8,6 +8,7 @@ import (
 	"songs/logic"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 func searchSongs(artist string, song string) string {
@@ -45,6 +46,9 @@ func postSerachSongs(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		fmt.Printf("Error cargando el archivo .env: %v", err)
+	}
 	router := mux.NewRouter()
 	router.HandleFunc("/search/song", postSerachSongs).Methods("POST")
 	fmt.Println("Servicio levantado")

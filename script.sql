@@ -27,7 +27,7 @@ CREATE TABLE `transaccion_songs` (
   PRIMARY KEY (`id_transaccion_song`),
   KEY `transaccion_song_catalogo_fuente_FK` (`fuente`),
   CONSTRAINT `transaccion_song_catalogo_fuente_FK` FOREIGN KEY (`fuente`) REFERENCES `catalogo_fuente` (`id_catalogo_fuente`)
-) ENGINE=InnoDB AUTO_INCREMENT=1704 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO songs.catalogo_fuente
 (id_catalogo_fuente, nombre_fuente, url_api)
