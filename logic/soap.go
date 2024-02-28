@@ -69,15 +69,15 @@ func ClientSoapSong(artist string, track string) []song {
 	singleSong := song{}
 	for _, v := range response.SearchLyricResult {
 		singleSong = song{
-			id:       strconv.FormatInt(int64(v.TrackId), 10),
-			name:     v.Song,
-			artist:   v.Artist,
-			duration: "0:00",
-			album:    "",
-			artwork:  v.ArtistUrl,
-			price:    "",
-			origin:   "",
-			fuente:   2,
+			Id:       strconv.FormatInt(int64(v.TrackId), 10),
+			Name:     v.Song,
+			Artist:   v.Artist,
+			Duration: "0:00",
+			Album:    "",
+			Artwork:  v.ArtistUrl,
+			Price:    "",
+			Origin:   "",
+			Fuente:   2,
 		}
 		songs = append(songs, singleSong)
 	}

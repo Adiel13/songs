@@ -30,7 +30,6 @@ func InsertSong(songs []song) {
 	dbUser := os.Getenv("DB_USER")
 	dbDB := os.Getenv("DB_DATABASE")
 
-	//dsn := "root:songs@tcp(db_songs:3306)/songs?charset=utf8mb4&parseTime=True&loc=Local"
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/songs?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbDB, dbHost, dbPort)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -39,15 +38,15 @@ func InsertSong(songs []song) {
 
 	for _, s := range songs {
 		newSong := TransaccionSong{
-			TrackID:    s.id,
-			NombreSong: s.name,
-			Artist:     s.artist,
-			Duration:   s.duration,
-			Album:      s.album,
-			URLArtWork: s.artwork,
+			TrackID:    s.Id,
+			NombreSong: s.Name,
+			Artist:     s.Artist,
+			Duration:   s.Duration,
+			Album:      s.Album,
+			URLArtWork: s.Artwork,
 			Price:      0.0,
-			Origin:     s.origin,
-			Fuente:     s.fuente,
+			Origin:     s.Origin,
+			Fuente:     s.Fuente,
 			Fecha:      time.Now(),
 		}
 		result := db.Create(&newSong)
@@ -60,5 +59,4 @@ func InsertSong(songs []song) {
 		}
 
 	}
-
 }

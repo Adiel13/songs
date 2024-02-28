@@ -1,13 +1,13 @@
 package logic
 
 type song struct {
-	id       string
-	name     string
-	artist   string
-	duration string
-	album    string
-	artwork  string
-	price    string
-	origin   string
-	fuente   int
+	Id       string
+	Name     string
+	Artist   string
+	Duration string
+	Album    string
+	Artwork  string
+	Price    string
+	Origin   string
+	Fuente   int
 }

@@ -14,38 +14,39 @@ import (
 
 var tokens map[string]bool
 
+type Payload struct {
+	Artist string `json:"artist"`
+	Song   string `json:"song"`
+}
+
 func searchSongs(artist string, song string) string {
 	resultSongs := logic.ClientSoapSong(artist, song)
 	resultApple := logic.ClientRestSongs(artist, song)
 	resultSongs = append(resultSongs, resultApple...)
 
 	logic.InsertSong(resultSongs)
+
 	jsonData, err := json.Marshal(resultSongs)
 	if err != nil {
 		fmt.Println("hubo un error")
 	}
-	//songs := string(jsonData)
-	fmt.Println(jsonData)
-	songsString := string(jsonData)
-	fmt.Println(songsString)
-	return string(jsonData)
-}
 
-type Payload struct {
-	Artist string `json:"artist"`
-	Song   string `json:"song"`
+	//fmt.Println(resultSongs)
+	//songsString := string(jsonData)
+	//fmt.Println(songsString)
+	//fmt.Printf("%T", jsonData)
+
+	return string(jsonData)
 }
 
 func postSerachSongs(w http.ResponseWriter, r *http.Request) {
 
-	// Verifica si el token de autorización está presente en el encabezado
 	authToken := r.Header.Get("Authorization")
 	if authToken == "" {
 		http.Error(w, "Token de autorización requerido", http.StatusUnauthorized)
 		return
 	}
 
-	// Verifica si el token de autorización es válido
 	if !tokens[authToken] {
 		http.Error(w, "Token de autorización inválido", http.StatusUnauthorized)
 		return

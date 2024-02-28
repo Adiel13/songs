@@ -93,15 +93,15 @@ func ClientRestSongs(artist string, track string) []song {
 	singleSong := song{}
 	for _, v := range jsonMainApple.Results {
 		singleSong = song{
-			id:       strconv.FormatInt(int64(v.TrackID), 10),
-			name:     v.TrackName,
-			artist:   v.ArtistName,
-			duration: strconv.FormatFloat(convertMillisToMinutes(v.TrackTimeMillis), 'E', -1, 64),
-			album:    v.CollectionName,
-			artwork:  v.ArtworkURL100,
-			price:    strconv.FormatFloat(v.TrackPrice, 'E', -1, 64),
-			origin:   v.Country,
-			fuente:   1,
+			Id:       strconv.FormatInt(int64(v.TrackID), 10),
+			Name:     v.TrackName,
+			Artist:   v.ArtistName,
+			Duration: strconv.FormatFloat(convertMillisToMinutes(v.TrackTimeMillis), 'E', -1, 64),
+			Album:    v.CollectionName,
+			Artwork:  v.ArtworkURL100,
+			Price:    strconv.FormatFloat(v.TrackPrice, 'E', -1, 64),
+			Origin:   v.Country,
+			Fuente:   1,
 		}
 		songs = append(songs, singleSong)
 	}
