@@ -3,28 +3,17 @@ package logic
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-// Definir un modelo para la tabla
-type TransaccionSong struct {
-	ID         uint   `gorm:"column:id_transaccion_song"`
-	TrackID    string `gorm:"column:id_track"`
-	NombreSong string `gorm:"column:nombre_song"`
-	Artist     string
-	Duration   string
-	Album      string
-	URLArtWork string `gorm:"column:url_art_work"`
-	Price      float64
-	Origin     string
-	Fuente     int `gorm:"column:fuente"`
-	Fecha      time.Time
-}
+func InsertSong(songs []song) []Result {
 
-func InsertSong(songs []song) {
+	res := []Result{}
+
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 	dbUser := os.Getenv("DB_USER")
@@ -37,18 +26,44 @@ func InsertSong(songs []song) {
 	}
 
 	for _, s := range songs {
+
+		duracion, _ := strconv.ParseFloat(s.Duration[:len(s.Duration)-1], 64)
+		precio, _ := strconv.ParseFloat(s.Duration[:len(s.Duration)-1], 64)
+		y := fmt.Sprintf("%.2f", precio)
+		x, _ := strconv.ParseFloat(y, 64)
+
 		newSong := TransaccionSong{
 			TrackID:    s.Id,
 			NombreSong: s.Name,
 			Artist:     s.Artist,
-			Duration:   s.Duration,
+			Duration:   fmt.Sprintf("%.2f", duracion),
 			Album:      s.Album,
 			URLArtWork: s.Artwork,
-			Price:      0.0,
+			Price:      x,
 			Origin:     s.Origin,
 			Fuente:     s.Fuente,
 			Fecha:      time.Now(),
 		}
+		font := ""
+		if s.Fuente == 1 {
+			font = "Apple"
+		} else {
+			font = "ChartLyrics"
+		}
+
+		r := Result{
+			Id:       s.Id,
+			Name:     s.Name,
+			Artist:   s.Artist,
+			Duration: fmt.Sprintf("%.2f", duracion),
+			Album:    s.Album,
+			Artwork:  s.Artwork,
+			Price:    fmt.Sprintf("Q. %s", y),
+			Origin:   font,
+		}
+
+		res = append(res, r)
+
 		result := db.Create(&newSong)
 		if result.Error != nil {
 			panic(result.Error)
@@ -57,6 +72,6 @@ func InsertSong(songs []song) {
 		} else {
 			println("No se insertó ninguna fila")
 		}
-
 	}
+	return res
 }

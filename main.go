@@ -14,7 +14,7 @@ import (
 
 var tokens map[string]bool
 
-type Payload struct {
+type Request struct {
 	Artist string `json:"artist"`
 	Song   string `json:"song"`
 }
@@ -24,17 +24,12 @@ func searchSongs(artist string, song string) string {
 	resultApple := logic.ClientRestSongs(artist, song)
 	resultSongs = append(resultSongs, resultApple...)
 
-	logic.InsertSong(resultSongs)
+	x := logic.InsertSong(resultSongs)
 
-	jsonData, err := json.Marshal(resultSongs)
+	jsonData, err := json.Marshal(x)
 	if err != nil {
 		fmt.Println("hubo un error")
 	}
-
-	//fmt.Println(resultSongs)
-	//songsString := string(jsonData)
-	//fmt.Println(songsString)
-	//fmt.Printf("%T", jsonData)
 
 	return string(jsonData)
 }
@@ -52,15 +47,14 @@ func postSerachSongs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var payload Payload
-	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
+	var req Request
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	fmt.Println("Mensaje recibido:", payload.Artist)
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, searchSongs(payload.Artist, payload.Song))
+	fmt.Fprintf(w, searchSongs(req.Artist, req.Song))
 }
 
 func main() {
@@ -75,6 +69,6 @@ func main() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/search/song", postSerachSongs).Methods("POST")
-	fmt.Println("Servicio levantado")
+	fmt.Println("Servicio songs cargado en el puerto")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
